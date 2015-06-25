@@ -55,60 +55,76 @@ class Assets extends Shortcode
    */
   public function getShortcode()
   {
-  	return ['name' => 'assets', 'type' => 'block'];
+    return ['name' => 'assets', 'type' => 'block'];
   }
 
 
-	/**
+  /**
    * Execute shortcode.
    *
-   * @param  Event 				$event An event object.
+   * @param  Event        $event An event object.
    * @return string|null         Return modified contents.
    */
-	public function execute(Event $event)
-	{
-		/* @var \Grav\Common\Grav $grav */
-		$grav = $event['grav'];
+  public function execute(Event $event)
+  {
+    /* @var \Grav\Common\Grav $grav */
+    $grav = $event['grav'];
 
-		/* @var \Grav\Common\Data\Data $options */
-		$options = $event['options'];
-		$options->setDefaults($this->defaults);
+    /* @var \Grav\Plugin\Shortcodes\Shortcodes $shortcodes */
+    $shortcodes = $event['shortcodes'];
 
-		$type = strtolower($options->get('type'));
-		$body = trim(strip_tags($event['body'], '<link><script>'));
+    /* @var \Grav\Common\Data\Data $options */
+    $options = $event['options'];
+    $options->setDefaults($this->defaults);
 
-		if ($inline = $options->get('inline')) {
-			if ($type === 'css') {
-				$grav['assets']->addInlineCss($body);
-			} elseif ($type === 'js') {
-				$grav['assets']->addInlineJs($body);
-			}
-		} else {
-			/* @var \Grav\Common\Page\Page $page */
-			$page = $event['page'];
+    $type = strtolower($options->get('type'));
+    $body = trim(strip_tags($event['body'], '<link><script>'));
 
-			/** @var Uri $uri */
+    if ($inline = $options->get('inline')) {
+      if ($type === 'css') {
+        $grav['assets']->addInlineCss($body);
+      } elseif ($type === 'js') {
+        $grav['assets']->addInlineJs($body);
+      }
+    } else {
+      /* @var \Grav\Common\Page\Page $page */
+      $page = $event['page'];
+
+      /* @var UniformResourceLocator $locator */
+      $locator = $grav['locator'];
+
+      /* @var Uri $uri */
       $uri = $grav['uri'];
 
-			$priority = $options->get('priority', 10);
-			$pipeline = $options->get('pipeline', false);
-			$loading = $options->get('load', '');
+      $priority = $options->get('priority', 10);
+      $pipeline = $options->get('pipeline', false);
+      $loading = $options->get('load', '');
 
-			$entries = explode("\n", $body);
-			$name = ($type === 'css') ? 'addCss' : 'addJs';
+      $entries = explode("\n", $body);
+      $name = ($type === 'css') ? 'addCss' : 'addJs';
 
-			foreach ($entries as $entry) {
-				$url = trim($entry);
-				// Don't process protocol agnostic URLs
-				if (substr($url, 0, 2) !== '//') {
-					// Resolve URL (relative or absolute with respect to current page)
-					$url = Uri::convertUrl($page, trim($entry));
-					$url = preg_replace('~^' . preg_quote($uri->rootUrl(false)) . '~i', '', $url);
-					$url = rtrim($uri->rootUrl(true), '/') . $url;
-				}
-				$grav['debugger']->addMessage([$url, $uri->rootUrl(true), $uri->rootUrl(false)]);
-				$grav['assets']->{$name}($url, $priority, $pipeline, $loading);
-			}
-		}
-	}
+      foreach ($entries as $entry) {
+        $url = $before = trim($entry, " \t");
+        // Don't process protocol agnostic or external URLs
+        if (!$grav['uri']->isExternal($url) && substr($url, 0, 2) !== '//') {
+          if (false !== strpos($url, '://')) {
+            // Get relative path to the resource (or false if not found).
+            if ($resource = $locator->findResource($url, false)) {
+              $url = rtrim($uri->rootUrl(false), '/') . '/' . $resource;
+            }
+          } else {
+            // Resolve URL (relative or absolute with respect to current page)
+            $url = Uri::convertUrl($page, $url);
+          }
+
+          if (false === strpos($url, '://')) {
+            $url = preg_replace('~^' . preg_quote($uri->rootUrl(false)) . '~i', '', $url);
+            $url = rtrim($uri->rootUrl(true), '/') . $url;
+          }
+        }
+
+        $grav['assets']->{$name}($url, $priority, $pipeline, $loading);
+      }
+    }
+  }
 }

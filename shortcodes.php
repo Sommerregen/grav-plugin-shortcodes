@@ -1,6 +1,6 @@
 <?php
 /**
- * Shortcodes v1.0.0
+ * Shortcodes v1.0.1
  *
  * This plugin enables to use shortcodes (simple snippets) inside a
  * document to be rendered by Grav.
@@ -9,7 +9,7 @@
  * http://benjamin-regler.de/license/
  *
  * @package     Shortcodes
- * @version     1.0.0
+ * @version     1.0.1
  * @link        <https://github.com/sommerregen/grav-plugin-shortcodes>
  * @author      Benjamin Regler <sommerregen@benjamin-regler.de>
  * @copyright   2015, Benjamin Regler
@@ -82,6 +82,9 @@ class ShortcodesPlugin extends Plugin
   {
     /** @var Page $page */
     $page = $event['page'];
+
+    /** @var Cache $cache */
+    $cache = $this->grav['cache'];
 
     $config = $this->mergeConfig($page);
     if ($config->get('enabled')) {

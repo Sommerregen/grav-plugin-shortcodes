@@ -5,15 +5,22 @@ enabled: true               # Set to false to disable this plugin completely
 # Default configurations for special shortcodes
 
 shortcodes:
+  twig:
+    enabled: true
+
   summary:
-    render: "html"          # Render content as HTML
+    enabled: true
 
   embed:
-    template: ""            # Default template to render a page
+    enabled: true
+    options:
+      template: ""          # Default template to render a page
 
   assets:
-    type: "css"             # Assets type (either "css" or "js")
-    inline: false           # Include assets as block or inline argument
-    priority: 10            # Priority to add CSS or JS to Grav pipeline, bigger comes first
-    pipeline: false         # Pipeline assets or not
-    load: ""                # Load asset either asynchronously "async" or deferred "defer"
+    enabled: true
+    options:
+      type: "css"           # Assets type (either "css" or "js")
+      inline: false         # Include assets as block or inline argument
+      priority: 10          # Priority to add CSS or JS to Grav pipeline, bigger comes first
+      pipeline: false       # Pipeline assets or not
+      load: ""              # Load asset either asynchronously "async" or deferred "defer"

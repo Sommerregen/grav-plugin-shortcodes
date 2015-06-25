@@ -1,6 +1,6 @@
 # [![Grav Shortcodes Plugin](assets/logo.png)][project]
 
-[![Release](https://img.shields.io/github/release/sommerregen/grav-plugin-shortcodes.svg)][project] [![Issues](https://img.shields.io/github/issues/sommerregen/grav-plugin-shortcodes.svg)][issues] [![Dual license](https://img.shields.io/badge/dual%20license-MIT%2FGPL-blue.svg)](LICENSE "License") <span style="float:right;">[![Flattr](https://api.flattr.com/button/flattr-badge-large.png)][flattr] [![PayPal](https://www.paypal.com/en_US/i/btn/btn_donate_SM.gif)][paypal] </span>
+[![Release](https://img.shields.io/github/release/sommerregen/grav-plugin-shortcodes.svg)][project] [![Issues](https://img.shields.io/github/issues/sommerregen/grav-plugin-shortcodes.svg)][issues] [![Dual license](https://img.shields.io/badge/dual%20license-MIT%2FGPL-blue.svg)](LICENSE "License") <span style="float:right;">[![Flattr](https://api.flattr.com/button/flattr-badge-large.png)][flattr] [![PayPal](https://www.paypal.com/en_US/i/btn/btn_donate_SM.gif)][paypal]</span>
 
 > This plugin introduces shortcodes to be used as simple snippets inside a document to be rendered by Grav.
 
@@ -9,9 +9,9 @@
 * [About](#about)
 * [Installation and Updates](#installation-and-updates)
 * [Usage](#usage)
-	* [For end-users](#for-end-users)
-	* [For developers](#for-developers)
-	* [Available shortcodes](#available-shortcodes)
+  * [For end-users](#for-end-users)
+  * [For developers](#for-developers)
+  * [Available shortcodes](#available-shortcodes)
 * [Contributing](#contributing)
 * [Licencse](#license)
 
@@ -27,7 +27,7 @@
 
 Installing or updating the `Shortcodes` plugin can be done in one of two ways. Using the GPM (Grav Package Manager) installation update method or manual install by downloading [this plugin](https://github.com/sommerregen/grav-plugin-shortcodes) and extracting all plugin files to
 
-	/your/site/grav/user/plugins/shortcodes
+    /your/site/grav/user/plugins/shortcodes
 
 For more informations, please check the [Installation and update guide](docs/INSTALL.md).
 
@@ -45,18 +45,26 @@ enabled: true               # Set to false to disable this plugin completely
 # Default configurations for special shortcodes
 
 shortcodes:
+  twig:
+    enabled: true
+
   summary:
-    render: "html"          # Render content as HTML
+    enabled: true
 
   embed:
-    template: ""            # Default template to render a page
+    enabled: true
+    options:
+      template: ""          # Default template to render a page
 
   assets:
-    type: "css"             # Assets type (either "css" or "js")
-    inline: false           # Include assets as block or inline argument
-    priority: 10            # Priority to add CSS or JS to Grav pipeline, bigger comes first
-    pipeline: false         # Pipeline assets or not
-    load: ""                # Load asset either asynchronously "async" or deferred "defer"
+    enabled: true
+    options:
+      type: "css"           # Assets type (either "css" or "js")
+      inline: false         # Include assets as block or inline argument
+      priority: 10          # Priority to add CSS or JS to Grav pipeline, bigger comes first
+      pipeline: false       # Pipeline assets or not
+      load: ""              # Load asset either asynchronously "async" or deferred "defer"
+
 ```
 
 If you need to change any value, then the best process is to copy the [shortcodes.yaml](shortcodes.yaml) file into your `users/config/plugins/` folder (create it if it doesn't exist), and then modify there. This will override the default settings.
@@ -78,27 +86,29 @@ The first word is always the name of the shortcode. Parameters follow the name.T
 
 Some shortcodes use or require closing shortcodes. Closing shortcodes either match the name of the shortcode with prepended `end` like `{{% endmyshortcode %}}` or just `{{% end %}}` e.g.,
 
-```twig
+```
 {{% summary %}}
-	My summary
+  My summary
 {{% end %}}
 ```
 
 Shortcodes can be nested and may require parameters to work. Parameters to shortcodes can either be passed in two ways
 
-```twig
+```
 {{% myshortcode param1 name="value" %}}
 OR
 {{% myshortcode(param1, name="value") %}}
 ```
 
-Sometimes you may want to print the shortcode without processing it. To archive this you have two options. Either you disable `Shortcodes` plugin per page using `shortcodes: false` or enclose the (whole) shortcode with the special `{{% raw %}}...{{% endraw %}}` shortcode like this:
+Sometimes you may want to print the shortcode without processing it. To archive this you have two options. Either you disable the `Shortcodes` plugin per page using `shortcodes: false` or enclose the (whole) shortcode with the special `{{% raw %}}...{{% endraw %}}` shortcode like this:
 
 ```
 {{% raw %}}
   {{% My ignored tag %}}
 {{% endraw %}}
 ```
+
+You can further comment out blocks of text or code using the `{# ... #}` tag as already known from Twig.
 
 ### Twig Function
 
@@ -110,12 +120,13 @@ Sometimes you may want to print the shortcode without processing it. To archive 
 
 ### Available shortcodes
 
-The `Shortcode` plugin offers some of the shortcodes by default and plugins can add their own as well via the [Shortcode API](#for-developers). The default supported shortcodes are listed in the following:
+The `Shortcodes` plugin offers some of the shortcodes by default and plugins can add their own as well via the [Shortcode API](#for-developers). The already supported shortcodes are listed in the following:
 
 ##### System
 
 - `{{% embed %}}` embeds a page or the contents of a page. [&raquo; Full instructions](docs/embed.md)
 - `{{% assets %}}` adds CSS and JS assets directly to the site. [&raquo; Full instructions](docs/assets.md)
+- `{{% twig %}}` renders custom texts using the Twig templating engine. [&raquo; Full instructions](docs/twig.md)
 
 ##### Images and Documents
 
@@ -136,27 +147,27 @@ The `Shortcodes` plugin offers developers to register their own shortcodes (here
 ```php
 class MyShortcode extends Plugin
 {
-	public static function getSubscribedEvents()
-	{
-		return [
-			'onShortcodesEvent' => ['onShortcodesEvent', 0]
-		];
-	}
+  public static function getSubscribedEvents()
+  {
+    return [
+    'onShortcodesEvent' => ['onShortcodesEvent', 0]
+    ];
+  }
 
-	...
+  ...
 
-	public function onShortcodesEvent(Event, $event)
-	{
-		// Initialize custom shortcode
-		$shortcode = new MyShortCode();
+  public function onShortcodesEvent(Event $event)
+  {
+    // Initialize custom shortcode
+    $shortcode = new MyShortCode();
 
-		// Register shortcode
-		$event['shortcodes']->register($shortcode);
-	}
+    // Register shortcode
+    $event['shortcodes']->register($shortcode);
+  }
 }
 ```
 
-Here `MyShortCode` is a class, which basically has the form
+The `MyShortCode` class has basically the format
 
 ```php
 use RocketTheme\Toolbox\Event\Event;
@@ -164,20 +175,20 @@ use Grav\Plugin\Shortcodes\Shortcode;
 
 class MyShortCode extends Shortcode
 {
-	public function getShortcode()
-	{
-		return ['name' => 'myshortcode', 'type' => 'block'];
-	}
+  public function getShortcode()
+  {
+    return ['name' => 'myshortcode', 'type' => 'block'];
+  }
 
-	public function execute(Event $event)
-	{
-		// do something and return string
-	}
+  public function execute(Event $event)
+  {
+    // do something and return string
+  }
 }
 ```
-where you can put your code inside the `execute` method. Here the `getShortcode` returns some informations bout your shortcode i.e, that the name should be "myshortcode" and that it is a block element. That's it.
+where you can put your code inside the `execute()` method. Here the special method `getShortcode()` returns some informations about your shortcode i.e, that the name should be "myshortcode" and that it is a block element. That's it.
 
-For further examples please study the already available shortcodes in the [provided shortcodes classes](classes/Shortcodes).
+For further examples, please study the already available shortcodes in the [provided shortcodes classes](classes/Shortcodes).
 
 ## Contributing
 
@@ -185,7 +196,7 @@ You can contribute at any time! Before opening any issue, please search for exis
 
 After that please note:
 
-* If you find a bug or would like to make a feature request or suggest an improvement, [please open a new issue][issues]. If you have any interesting ideas for additions to the syntax please do suggest them as well!
+* If you find a bug, would like to make a feature request or suggest an improvement, [please open a new issue][issues]. If you have any interesting ideas for additions to the syntax please do suggest them as well!
 * Feature requests are more likely to get attention if you include a clearly described use case.
 * If you wish to submit a pull request, please make again sure that your request match the [guidelines for contributing](docs/CONTRIBUTING.md) and that you keep track of adding unit tests for any new or changed functionality.
 

@@ -1,12 +1,12 @@
 {
-   "project":"grav-plugin-shortcodes",
-   "platforms":{
-      "grav":{
-         "nodes":{
+   "project": "grav-plugin-shortcodes",
+   "platforms": {
+      "grav": {
+         "nodes": {
             "plugin":[
                {
-                  "source":"/",
-                  "destination":"/user/plugins/shortcodes"
+                  "source": "/",
+                  "destination": "/user/plugins/shortcodes"
                }
             ]
          }

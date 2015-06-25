@@ -19,18 +19,18 @@ use RocketTheme\Toolbox\Event\Event;
  */
 interface ShortcodeInterface
 {
-	/**
-	 * Execute shortcode.
-	 *
-	 * @param  Event  			$event An event object.
-	 * @return string|null         Return modified contents.
-	 */
-	public function execute(Event $event);
+  /**
+   * Execute shortcode.
+   *
+   * @param  Event        $event An event object.
+   * @return string|null         Return modified contents.
+   */
+  public function execute(Event $event);
 
-	/**
+  /**
    * Get informations about the shortcode.
    *
    * @return array An associative array needed to register the shortcode.
    */
-	public function getShortcode();
+  public function getShortcode();
 }
