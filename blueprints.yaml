@@ -1,5 +1,5 @@
 name: "Shortcodes"
-version: 1.0.0
+version: 1.0.1
 description: "This plugin enables to use shortcodes (simple snippets) inside a document to be rendered by Grav."
 icon: puzzle-piece
 author:
