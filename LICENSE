@@ -1,9 +1,30 @@
-For ease of distribution, Grav Shortcodes Plugin is under a dual license. You are free to pick which one suits your needs, but please keep in mind that dual licensing is based on the principle of Give-and-Take. Choose wisely.
+Grav Shortcodes Plugin License
+==============================
+
+Grav Shortcodes Plugin is meant to be a free and open source for all now
+and in future.
+
+For ease of distribution, Grav Shortcodes Plugin is under a dual license
+and is based on the principle of Give-and-Take.
+
+Unless otherwise noted Grav Shortcodes Plugin is licensed under the terms
+of GPLv3 http://opensource.org/licenses/GPL-3.0 (or see license text below).
+
+However it is licensed under the terms of MIT http://opensource.org/licenses/MIT
+(or see license text below) when the following conditions are met:
+
+  - Grav Shortcodes Plugin is used, copied, merged, published for or
+    distributed with Grav (http://getgrav.org)
+
+and can be understood as a Free and Open Source Software ("FOSS") License
+Exception especially for all plugins, themes, extensions available for Grav
+using Grav Shortcodes Plugin in any way.
+
 
 MIT LICENSE
 -----------
 
-Copyright (c) 2015 Benjamin Regler,  https://github.com/sommerregen/grav-plugin-shortcodes
+Copyright (c) 2015 Benjamin Regler, https://github.com/sommerregen/grav-plugin-shortcodes
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +43,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 
 GPL VERSION 3
 -------------
