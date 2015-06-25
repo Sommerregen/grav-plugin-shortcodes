@@ -15,13 +15,16 @@ use Grav\Plugin\Shortcodes\Twig\ShortcodeNode;
 /**
  * We should imagine the required code to call our function:
  *
- * {% mytag 1 "test" (2+3) %}Hello, world!{% endmytag %}
+ * {% mytag 1 "test" (2+3) %}
+ *   Hello, world!
+ * {% endmytag %}
  *
  * Should call:
- *  functionToCall("Hello, world!", 1, "test", 5)
+ *   functionToCall("Hello, world!", array(1, "test", 5))
  *
- * As expressions need to be subcompiled ( 2+3 should result in 5 ), we will need
- * to create an array of arguments, and call functionToCall using call_user_func_array.
+ * As expressions need to be subcompiled ( 2+3 should result in 5 ), we
+ * will need to create an array of arguments, and call functionToCall
+ * using call_user_func_array.
  */
 
 /**
@@ -65,9 +68,6 @@ class ShortcodeNode extends \Twig_Node
         ->write("echo \$context['__shortcodes'](")
         ->string($this->tag)
         ->write(", \$body, \$params);\n")
-         // ->write("echo twig_escape_filter(\$this->env, call_user_func_array(")
-         // ->raw("\$this->env->getFunction('shortcodes')->getCallable(),")
-         // ->raw("array(\$body, \$params)), \"html\", null, true);\n")
         ->write("unset(\$body, \$params);\n");
    }
 }

@@ -15,18 +15,17 @@ namespace Grav\Plugin\Shortcodes;
  */
 class Autoloader
 {
-	protected $routes = [];
+  protected $routes = [];
 
-	public function __construct($routes = [])
-	{
-
-		// Set routes for autoloading
+  public function __construct($routes = [])
+  {
+    // Set routes for autoloading
     if (!is_array($routes) || count($routes) == 0) {
       $routes = [__NAMESPACE__ => __DIR__];
     }
 
     $this->route($routes);
-	}
+  }
 
   public function route($var = null, $reset = true)
   {
@@ -52,7 +51,7 @@ class Autoloader
     return $this->routes;
   }
 
-	/**
+  /**
    * Autoload classes
    *
    * @param  string $class Class name
@@ -80,17 +79,17 @@ class Autoloader
       }
     }
 
-  	return false;
+    return false;
   }
 
-	/**
+  /**
    * Registers this instance as an autoloader
    *
    * @param bool $prepend Whether to prepend the autoloader or not
    */
-	public function register($prepend = false)
-	{
-		spl_autoload_register(array($this, 'autoload'), false, $prepend);
+  public function register($prepend = false)
+  {
+    spl_autoload_register(array($this, 'autoload'), false, $prepend);
   }
 
   /**
@@ -98,6 +97,6 @@ class Autoloader
    */
   public function unregister()
   {
-  	spl_autoload_unregister(array($this, 'autoload'));
+    spl_autoload_unregister(array($this, 'autoload'));
   }
 }

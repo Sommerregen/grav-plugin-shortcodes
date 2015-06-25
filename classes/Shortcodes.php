@@ -31,7 +31,7 @@ class Shortcodes
    *
    * @var \Grav\Common\Grav
    */
-	use GravTrait;
+  use GravTrait;
 
   /**
    * Twig environment
@@ -39,6 +39,13 @@ class Shortcodes
    * @var \Twig_Environment
    */
   protected $twig;
+
+  /**
+   * Twig Loader array
+   *
+   * @var \Twig_Loader_Array
+   */
+  protected $loader;
 
   /**
    * @var \Grav\Common\Data\Data
@@ -57,27 +64,28 @@ class Shortcodes
    *
    * @param array $config An array of default values.
    */
-	public function __construct($config)
+  public function __construct($config)
   {
-  	$this->config = $config;
+    $this->config = $config;
 
-  	// Set up Twig environment
-  	$this->twig = new \Twig_Environment(new \Twig_Loader_String(), [
-      'use_strictr_variables' => false,
+    // Set up Twig environment
+    $this->loader = new \Twig_Loader_Array([]);
+    $this->twig = new \Twig_Environment($this->loader, [
+      'use_strict_variables' => false,
     ]);
 
-  	// Set up sandbox for parsing shortcodes
-  	$policy = new \Twig_Sandbox_SecurityPolicy($this->loadShortcodes());
-		$this->twig->addExtension(new \Twig_Extension_Sandbox($policy, true));
+    // Set up sandbox for parsing shortcodes
+    $policy = new \Twig_Sandbox_SecurityPolicy($this->loadShortcodes());
+    $this->twig->addExtension(new \Twig_Extension_Sandbox($policy, true));
 
-		// Modify lexer to match special shortcode syntax
-		$lexer = new \Twig_Lexer($this->twig, array(
-			'tag_comment'   => ['{#', '#}'],
-			'tag_block'     => ['{{%', '%}}'],
-			'tag_variable'  => ['{#', '#}'],
-			'interpolation' => ['#{', '}']
-		));
-		$this->twig->setLexer($lexer);
+    // Modify lexer to match special shortcode syntax
+    $lexer = new \Twig_Lexer($this->twig, array(
+      'tag_comment'   => ['{#', '#}'],
+      'tag_block'     => ['{{%', '%}}'],
+      'tag_variable'  => ['{#', '#}'],
+      'interpolation' => ['#{', '}']
+    ));
+    $this->twig->setLexer($lexer);
   }
 
   /**
@@ -107,7 +115,18 @@ class Shortcodes
       }
     };
 
-    return $this->twig->render($content, ['__shortcodes' => $function]);
+    // Process in-page shortcodes Twig
+    $name = '@Shortcodes:' . $page->path();
+    $this->loader->setTemplate($name, $content);
+    $vars = ['__shortcodes' => $function];
+
+    try {
+      $output = $this->twig->render($name, $vars);
+    } catch (\Twig_Error_Loader $e) {
+      throw new \RuntimeException($e->getRawMessage(), 404, $e);
+    }
+
+    return $output;
   }
 
   /**
@@ -122,18 +141,36 @@ class Shortcodes
   public function register($shortcode, $options = [])
   {
     if ($shortcode instanceof ShortcodeInterface) {
-  		$options += $shortcode->getShortcode();
+      $options += $shortcode->getShortcode();
       $inline = ($options['type'] === 'inline') ? true : false;
-  		$this->shortcodes[$options['name']] = $shortcode;
+      $this->shortcodes[$options['name']] = $shortcode;
 
-  		$this->twig->addTokenParser(
-  			new ShortcodeTokenParser($options['name'], $inline)
-  		);
+      $this->twig->addTokenParser(
+        new ShortcodeTokenParser($options['name'], $inline)
+      );
 
       return true;
-  	}
+    }
 
     return false;
+  }
+
+  /**
+   * Add extra items to the shortcodes stream.
+   *
+   * @param string $group   The group name to add the extra items to.
+   * @param any    $extra   The item to store.
+   */
+  public function addExtra($group, $extra)
+  {
+    /* @var \Grav\Common\Page\Page $page */
+    $page = self::getGrav()['page'];
+
+    $header = $page->header();
+    $shortcodes = isset($header->shortcodes) ? $header->shortcodes : [];
+    $shortcodes['extra'][$group][] = $extra;
+
+    $page->modifyHeader('shortcodes', $shortcodes);
   }
 
   /**
@@ -141,20 +178,24 @@ class Shortcodes
    */
   protected function loadShortcodes()
   {
-    $iterator = new \FilesystemIterator(__DIR__.'/shortcodes');
+    $iterator = new \FilesystemIterator(__DIR__.'/Shortcodes');
     foreach ($iterator as $fileinfo) {
       $name = $fileinfo->getBasename('.php');
 
       // Load shortcodes in directory "Shortcodes"
       $class =  __NAMESPACE__."\\Shortcodes\\$name";
       $defaults = $this->config->get('plugins.shortcodes.shortcodes.'.strtolower($name), []);
-      $shortcode = new $class($defaults);
-      $this->register($shortcode);
+
+      if ($defaults['enabled']) {
+        $options = isset($defaults['options']) ? $defaults['options'] : [];
+        $shortcode = new $class($options);
+        $this->register($shortcode);
+      }
     }
 
     // Fire event
-  	self::getGrav()->fireEvent('onShortcodesEvent', new Event(['shortcodes' => $this]));
+    self::getGrav()->fireEvent('onShortcodesEvent', new Event(['shortcodes' => $this]));
 
-  	return array_keys($this->shortcodes);
+    return array_keys($this->shortcodes);
   }
 }

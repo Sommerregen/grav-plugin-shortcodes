@@ -19,17 +19,17 @@ use Grav\Plugin\Shortcodes\ShortcodeInterface;
  */
 abstract class Shortcode implements ShortcodeInterface
 {
-	/**
-	 * @var array
-	 */
-	protected $defaults;
+  /**
+   * @var array
+   */
+  protected $defaults;
 
-	/**
+  /**
    * Constructor
    *
    * @param array $config An array of default values.
    */
-	public function __construct($defaults = []) {
-		$this->defaults = $defaults;
-	}
+  public function __construct($defaults = []) {
+    $this->defaults = $defaults;
+  }
 }
