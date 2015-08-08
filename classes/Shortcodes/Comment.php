@@ -1,6 +1,6 @@
 <?php
 /**
- * Twig
+ * Comment
  *
  * This file is part of Grav Shortcodes plugin.
  *
@@ -14,11 +14,12 @@ use RocketTheme\Toolbox\Event\Event;
 use Grav\Plugin\Shortcodes\Shortcode;
 
 /**
- * Twig
+ * Comment
  *
- * Render custom texts using the Twig templating engine.
+ * Comment allows you to use comments and annotations in a markdown
+ * document without being outputted to the user.
  */
-class Twig extends Shortcode
+class Comment extends Shortcode
 {
   /**
    * Get informations about the shortcode.
@@ -27,7 +28,7 @@ class Twig extends Shortcode
    */
   public function getShortcode()
   {
-    return ['name' => 'twig', 'type' => 'block'];
+    return ['name' => 'comment', 'type' => 'block'];
   }
 
   /**
@@ -38,22 +39,7 @@ class Twig extends Shortcode
    */
   public function execute(Event $event)
   {
-    /* @var \Grav\Common\Data\Data $options */
-    $options = $event['options'];
-    $options->setDefaults($this->defaults);
-
-    /* @var \Grav\Common\Grav $grav */
-    $grav = $event['grav'];
-    $body = trim($event['body']);
-
-    if ($template = $options->get('template')) {
-      $page = clone $event['page'];
-      $page->content($body);
-
-      $content = $grav['twig']->processTemplate($template, [$page]);
-    } else {
-      $content = $grav['twig']->processString($body);
-    }
-    return $content;
+    // Empty (ignore all body content)
+    return '';
   }
 }
