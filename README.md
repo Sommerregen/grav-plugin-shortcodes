@@ -9,9 +9,9 @@
 * [About](#about)
 * [Installation and Updates](#installation-and-updates)
 * [Usage](#usage)
-  * [For end-users](#for-end-users)
-  * [For developers](#for-developers)
-  * [Available shortcodes](#available-shortcodes)
+    * [For end-users](#for-end-users)
+    * [For developers](#for-developers)
+    * [Available shortcodes](#available-shortcodes)
 * [Contributing](#contributing)
 * [Licencse](#license)
 
@@ -25,9 +25,9 @@
 
 ## Installation and Updates
 
-Installing or updating the `Shortcodes` plugin can be done in one of two ways. Using the GPM (Grav Package Manager) installation update method or manual install by downloading [this plugin](https://github.com/sommerregen/grav-plugin-shortcodes) and extracting all plugin files to
+Installing or updating the `Shortcodes` plugin can be done in one of two ways. Using the GPM (Grav Package Manager) installation update method or (i.e. `bin/gpm install shortcodes`) manual install by downloading [this plugin](https://github.com/sommerregen/grav-plugin-shortcodes) and extracting all plugin files to
 
-    /your/site/grav/user/plugins/shortcodes
+    user/plugins/shortcodes
 
 For more informations, please check the [Installation and update guide](docs/INSTALL.md).
 
@@ -45,17 +45,6 @@ enabled: true               # Set to false to disable this plugin completely
 # Default configurations for special shortcodes
 
 shortcodes:
-  twig:
-    enabled: true
-
-  summary:
-    enabled: true
-
-  embed:
-    enabled: true
-    options:
-      template: ""          # Default template to render a page
-
   assets:
     enabled: true
     options:
@@ -65,6 +54,24 @@ shortcodes:
       pipeline: false       # Pipeline assets or not
       load: ""              # Load asset either asynchronously "async" or deferred "defer"
 
+  comment:
+    enabled: true
+
+  embed:
+    enabled: true
+    options:
+      template: ""          # Default template to render a page
+
+  markdown:
+    enabled: true
+    options:
+      extra: true           # Enable support for Markdown Extra
+
+  summary:
+    enabled: true
+
+   twig:
+    enabled: true
 ```
 
 If you need to change any value, then the best process is to copy the [shortcodes.yaml](shortcodes.yaml) file into your `users/config/plugins/` folder (create it if it doesn't exist), and then modify there. This will override the default settings.
@@ -124,12 +131,15 @@ The `Shortcodes` plugin offers some of the shortcodes by default and plugins can
 
 ##### System
 
-- `{{% embed %}}` embeds a page or the contents of a page. [&raquo; Full instructions](docs/embed.md)
 - `{{% assets %}}` adds CSS and JS assets directly to the site. [&raquo; Full instructions](docs/assets.md)
+- `{{% embed %}}` embeds a page or the contents of a page. [&raquo; Full instructions](docs/embed.md)
+- `{{% markdown %}}`is a shortcut to parse texts using Markdown syntax in a document. [&raquo; Full instructions](docs/markdown.md)
 - `{{% twig %}}` renders custom texts using the Twig templating engine. [&raquo; Full instructions](docs/twig.md)
 
 ##### Images and Documents
 
+- `{{% comment %}}` allows you to use comments and annotations in a Markdown document without being outputted to the user. [&raquo; Full instructions](docs/comment.md)
+- `{{% raw %}}` marks sections as being raw text that should not be parsed. [&raquo; Full instructions](docs/raw.md)
 - `{{% summary %}}` sets the summary of page. [&raquo; Full instructions](docs/summary.md)
 
 ##### Audio
@@ -142,51 +152,83 @@ Useful shortcodes for adding a blog archive index, contact form, polls, and more
 
 ## For developers
 
-The `Shortcodes` plugin offers developers to register their own shortcodes (here: `myshortcode`). To do this `Shortcodes` provides an event `onShortcodesEvent`, which could be used to register new shortcodes via
+The `Shortcodes` plugin offers developers to register their own shortcodes (here: `myblockshortcode` and `myinlineshortcode`). To do this `Shortcodes` provides an event `onShortcodesInitialized`, which could be used to register new shortcodes via the provided `Grav\Plugin\Shortcodes\Shortcodes::register` method. For example in your custom plugin use
 
 ```php
-class MyShortcode extends Plugin
+namespace Grav\Plugin;
+
+use Grav\Plugin\Shortcodes;
+
+class MyPlugin extends Plugin
 {
   public static function getSubscribedEvents()
   {
     return [
-    'onShortcodesEvent' => ['onShortcodesEvent', 0]
+      'onShortcodesInitialized' => ['onShortcodesInitialized', 0]
     ];
   }
 
-  ...
-
-  public function onShortcodesEvent(Event $event)
+  public function onShortcodesInitialized(Event $event)
   {
     // Initialize custom shortcode
-    $shortcode = new MyShortCode();
+    $shortcode = new MyShortcodes();
 
-    // Register shortcode
+    // Create block shortcode
+    $block = new Shortcodes\BlockShortcode('myblockshortcode', [$shortcode, 'block']);
+
+    // Create inline shortcode
+    $inline = new Shortcodes\InlineShortcode('myinlineshortcode', [$shortcode, 'inline']);
+
+    // Register shortcodes
+    $event['shortcodes']->register($block);
+    $event['shortcodes']->register($inline);
+
+    // Or register shortcodes from class (calls getShortcodes internally)
     $event['shortcodes']->register($shortcode);
   }
 }
 ```
 
-The `MyShortCode` class has basically the format
+The `MyShortcodes` class has basically the format
 
 ```php
-use RocketTheme\Toolbox\Event\Event;
-use Grav\Plugin\Shortcodes\Shortcode;
+namespace Grav\Plugin;
 
-class MyShortCode extends Shortcode
+use Grav\Plugin\Shortcodes;
+use RocketTheme\Toolbox\Event\Event;
+
+class MyShortcodes
 {
-  public function getShortcode()
+  public function getShortcodes()
   {
-    return ['name' => 'myshortcode', 'type' => 'block'];
+    $options = [];
+
+    return [
+      new Shortcodes\BlockShortcode('myblockshortcode', [$this, 'block'], $options).
+      new Shortcodes\InlineShortcode('myinlineshortcode', [$this, 'inline'], $options)
+    ];
   }
 
-  public function execute(Event $event)
+  public function block(Event $event)
+  {
+    // do something and return string
+  }
+
+  public function inline(Event $event)
   {
     // do something and return string
   }
 }
 ```
-where you can put your code inside the `execute()` method. Here the special method `getShortcode()` returns some informations about your shortcode i.e, that the name should be "myshortcode" and that it is a block element. That's it.
+where `myblockshortcode` and `myinlineshortcode` are placeholders for your block and inline shortcode names respectively. When `{{% myblockshortcode %}}...{{% end %}}` is found in the text the method `block` is called and `inline` when `{{% myinlineshortcode %}}` is found. The `event` argument is an array of
+
+- the body text ("body")
+- the options passed to the shortcode ("options")
+- the grav instance ("grav")
+- the shortcodes instance ("shortcodes")
+- the current page ("page")
+
+which can be used in your custom functions.
 
 For further examples, please study the already available shortcodes in the [provided shortcodes classes](classes/Shortcodes).
 

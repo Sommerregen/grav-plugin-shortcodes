@@ -8,6 +8,7 @@
 
 ```twig
 {{% embed page="/path-or-slug" modular=false|true template="name" %}}
+// OR
 {{% embed "/path-or-slug" modular=false|true template="name" %}}
 ```
 

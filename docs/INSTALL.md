@@ -15,7 +15,7 @@ This will install the `Shortcodes` plugin into your `/user/plugins` directory wi
 
 ### Manual Installation
 
-To install this plugin, just download the zip version of this repository and unzip it under `/your/site/grav/user/plugins`. Then, rename the folder to `shortcodes`. You can find these files either on [GitHub](https://github.com/sommerregen/grav-plugin-external-links) or via [GetGrav.org](http://getgrav.org/downloads/plugins).
+To install this plugin, just download the zip version of this repository and unzip it under `/your/site/grav/user/plugins`. Then, rename the folder to `shortcodes`. You can find these files either on [GitHub](https://github.com/sommerregen/grav-plugin-shortcodes) or via [GetGrav.org](http://getgrav.org/downloads/plugins).
 
 You should now have all the plugin files under
 
@@ -40,8 +40,8 @@ This command will check your Grav install to see if your `Shortcodes` plugin is 
 Manually updating `Shortcodes` is pretty simple. Here is what you will need to do to get this done:
 
 * Delete the `your/site/user/plugins/shortcodes` directory.
-* Download the new version of the `Shortcodes` plugin from either [GitHub](https://github.com/sommerregen/grav-plugin-external-links) or [GetGrav.org](http://getgrav.org/downloads/plugins).
-* Unzip the zip file in `your/site/user/plugins` and rename the resulting folder to `shortcode`.
+* Download the new version of the `Shortcodes` plugin from either [GitHub](https://github.com/sommerregen/grav-plugin-shortcodes) or [GetGrav.org](http://getgrav.org/downloads/plugins).
+* Unzip the zip file in `your/site/user/plugins` and rename the resulting folder to `shortcodes`.
 * Clear the Grav cache. The simplest way to do this is by going to the root Grav directory in terminal and typing `bin/grav clear-cache`.
 
 >> Note: Any changes you have made to any of the files listed under this directory will also be removed and replaced by the new set. Any files located elsewhere (for example a YAML settings file placed in `user/config/plugins`) will remain intact.
