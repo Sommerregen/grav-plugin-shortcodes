@@ -15,9 +15,9 @@ use Grav\Common\GravTrait;
 use Grav\Common\Data\Data;
 use RocketTheme\Toolbox\Event\Event;
 
-use Grav\Plugin\Shortcodes\Shortcode;
+use Grav\Plugin\Shortcodes\Twig;
+use Grav\Plugin\Shortcodes\ShortcodesTrait;
 use Grav\Plugin\Shortcodes\ShortcodeInterface;
-use Grav\Plugin\Shortcodes\Twig\ShortcodeTokenParser;
 
 /**
  * Shortcodes
@@ -48,6 +48,13 @@ class Shortcodes
   protected $loader;
 
   /**
+   * Twig Sanbox SecurityPolicy
+   *
+   * @var \Twig_Sandbox_SecurityPolicy
+   */
+  protected $policy;
+
+  /**
    * @var \Grav\Common\Data\Data
    */
   protected $config;
@@ -67,16 +74,18 @@ class Shortcodes
   public function __construct($config)
   {
     $this->config = $config;
+    ShortcodesTrait::setShortcodesClass($this);
 
     // Set up Twig environment
     $this->loader = new \Twig_Loader_Array([]);
-    $this->twig = new \Twig_Environment($this->loader, [
+    $this->twig = new Twig\Environment($this->loader, [
       'use_strict_variables' => false,
     ]);
 
     // Set up sandbox for parsing shortcodes
-    $policy = new \Twig_Sandbox_SecurityPolicy($this->loadShortcodes());
-    $this->twig->addExtension(new \Twig_Extension_Sandbox($policy, true));
+    $this->policy = new \Twig_Sandbox_SecurityPolicy();
+    $this->twig->addExtension(new \Twig_Extension_Sandbox($this->policy, true));
+    $this->policy->setAllowedTags($this->loadShortcodes());
 
     // Modify lexer to match special shortcode syntax
     $lexer = new \Twig_Lexer($this->twig, array(
@@ -100,19 +109,21 @@ class Shortcodes
   public function render($content, $options = [], $page = null)
   {
     // Build an anonymous function to pass to twig `render` method
-    $function = function($tag, $body, $params) use ($options, $page) {
+    $function = function($tag, $body, $arguments) use ($options, $page) {
       if (isset($this->shortcodes[$tag])) {
         $options = isset($options[$tag]) ? $options[$tag] : [];
-        $event = new Event([
-          'body' => $body,
-          'options' => new Data(array_replace_recursive($options, $params)),
-          'grav' => self::getGrav(),
-          'shortcodes' => $this,
-          'page' => $page
-        ]);
-
-        return $this->shortcodes[$tag]->execute($event);
       }
+
+      $event = new Event([
+        'body' => $body,
+        'options' => new Data(array_replace_recursive($options, $arguments)),
+        'grav' => self::getGrav(),
+        'shortcodes' => $this,
+        'page' => $page,
+        'tag' => $tag
+      ]);
+
+      return $event;
     };
 
     // Process in-page shortcodes Twig
@@ -140,14 +151,46 @@ class Shortcodes
    */
   public function register($shortcode, $options = [])
   {
-    if ($shortcode instanceof ShortcodeInterface) {
-      $options += $shortcode->getShortcode();
-      $inline = ($options['type'] === 'inline') ? true : false;
-      $this->shortcodes[$options['name']] = $shortcode;
+    // Register shortcodes from array
+    if (is_array($shortcode)) {
+      foreach ($shortcode as $item) {
+        $this->register($item, $options);
+      }
 
-      $this->twig->addTokenParser(
-        new ShortcodeTokenParser($options['name'], $inline)
-      );
+    // Register shortcodes from (built-in) classes
+    } elseif ($shortcode instanceof ShortcodeInterface) {
+      $options += $shortcode->getShortcode();
+      $name = $options['name'];
+
+      $this->shortcodes[$name] = $shortcode;
+      switch ($options['type']) {
+        case 'inline':
+          $this->twig->addShortcode(
+            new InlineShortcode($name, [$shortcode, 'execute'], $options)
+          );
+          return true;
+
+        case 'block':
+          $this->twig->addShortcode(
+            new BlockShortcode($name, [$shortcode, 'execute'], $options)
+          );
+          return true;
+
+        default:
+          break;
+      }
+
+    // Register shortcodes from Shortcode functions
+    } elseif ($shortcode instanceof Twig\GenericShortcode) {
+      $this->twig->addShortcode($shortcode);
+      return true;
+
+    // Register shortcodes from Shortcode extensions
+    } elseif ($shortcode instanceof Twig\ExtensionInterface || (is_object($shortcode) && method_exists($shortcode, 'getShortcodes'))) {
+      $shortcodes = $shortcode->getShortcodes();
+      foreach ($shortcodes as $shortcode) {
+        $this->twig->addShortcode($shortcode);
+      }
 
       return true;
     }
@@ -183,10 +226,10 @@ class Shortcodes
       $name = $fileinfo->getBasename('.php');
 
       // Load shortcodes in directory "Shortcodes"
-      $class =  __NAMESPACE__."\\Shortcodes\\$name";
+      $class =  __NAMESPACE__ . "\\Shortcodes\\$name";
       $defaults = $this->config->get('plugins.shortcodes.shortcodes.'.strtolower($name), []);
 
-      if ($defaults['enabled']) {
+      if (empty($defaults) || $defaults['enabled']) {
         $options = isset($defaults['options']) ? $defaults['options'] : [];
         $shortcode = new $class($options);
         $this->register($shortcode);
@@ -194,8 +237,11 @@ class Shortcodes
     }
 
     // Fire event
+    self::getGrav()->fireEvent('onShortcodesInitialized', new Event(['shortcodes' => $this]));
+    // deprecated
     self::getGrav()->fireEvent('onShortcodesEvent', new Event(['shortcodes' => $this]));
 
+    $this->shortcodes = $this->twig->getShortcodes();
     return array_keys($this->shortcodes);
   }
 }
