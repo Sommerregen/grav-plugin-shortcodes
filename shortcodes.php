@@ -21,10 +21,8 @@ namespace Grav\Plugin;
 
 use Grav\Common\Grav;
 use Grav\Common\Plugin;
+use Grav\Plugin\Shortcodes;
 use RocketTheme\Toolbox\Event\Event;
-
-use Grav\Plugin\Shortcodes\Autoloader;
-use Grav\Plugin\Shortcodes\Shortcodes;
 
 /**
  * ShortcodesPlugin
@@ -131,11 +129,11 @@ class ShortcodesPlugin extends Plugin
       // Initialize Autoloader
       require_once(__DIR__.'/classes/Autoloader.php');
 
-      $autoloader = new Autoloader();
+      $autoloader = new Shortcodes\Autoloader();
       $autoloader->register();
 
       // Initialize back-end
-      $this->backend = new Shortcodes($this->config);
+      $this->backend = new Shortcodes\Shortcodes($this->config);
     }
 
     return $this->backend;
