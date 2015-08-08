@@ -5,17 +5,6 @@ enabled: true               # Set to false to disable this plugin completely
 # Default configurations for special shortcodes
 
 shortcodes:
-  twig:
-    enabled: true
-
-  summary:
-    enabled: true
-
-  embed:
-    enabled: true
-    options:
-      template: ""          # Default template to render a page
-
   assets:
     enabled: true
     options:
@@ -24,3 +13,22 @@ shortcodes:
       priority: 10          # Priority to add CSS or JS to Grav pipeline, bigger comes first
       pipeline: false       # Pipeline assets or not
       load: ""              # Load asset either asynchronously "async" or deferred "defer"
+
+  comment:
+    enabled: true
+
+  embed:
+    enabled: true
+    options:
+      template: ""          # Default template to render a page
+
+  markdown:
+    enabled: true
+    options:
+      extra: true           # Enable support for Markdown Extra
+
+  summary:
+    enabled: true
+
+  twig:
+    enabled: true

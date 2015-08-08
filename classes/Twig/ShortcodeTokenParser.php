@@ -10,28 +10,44 @@
 
 namespace Grav\Plugin\Shortcodes\Twig;
 
-use Grav\Plugin\Shortcodes\Twig\ShortcodeNode;
-
 /**
  * ShortcodeTokenParser
  */
 class ShortcodeTokenParser extends \Twig_TokenParser
 {
+  /**
+   * The name of the TokenParser.
+   *
+   * @var name
+   */
   protected $name;
-  protected $inline;
 
-  public function __construct($tag, $inline = false)
+  /**
+   * The shortcode assigned to the TokenParser.
+   *
+   * @var \Grav\Plugin\Shortcodes\Twig\GenericShortcode
+   */
+  protected $shortcode;
+
+  /**
+   * Constuctor.
+   *
+   * @param string           $name      The name of the TokenParser.
+   * @param GenericShortcode $shortcode A shortcode instance to assign
+   *                                    to the TokenParser.
+   */
+  public function __construct($name, $shortcode)
   {
-    $this->name = (string) $tag;
-    $this->inline = (bool) $inline;
+    $this->name = (string) $name;
+    $this->shortcode = $shortcode;
   }
 
   /**
    * Parses a token and returns a node.
    *
-   * @param Twig_Token $token A Twig_Token instance
+   * @param  Twig_Token         $token   A Twig_Token instance
    *
-   * @return Twig_NodeInterface A Twig_NodeInterface instance
+   * @return Twig_NodeInterface          A Twig_NodeInterface instance
    */
   public function parse(\Twig_Token $token)
   {
@@ -44,7 +60,7 @@ class ShortcodeTokenParser extends \Twig_TokenParser
     $body = new \Twig_Node();
 
     // Detect middle tags only for block expressions
-    $continue = !$this->inline;
+    $continue = ($this->shortcode->getType() == 'block') ? true : false;
     while ($continue)
     {
       $this->parser->pushLocalScope();
@@ -67,7 +83,8 @@ class ShortcodeTokenParser extends \Twig_TokenParser
       $stream->expect(\Twig_Token::BLOCK_END_TYPE);
     }
 
-    return new ShortcodeNode($body, $arguments, $lineno, $this->getTag());
+    $class = $this->shortcode->getNodeClass();
+    return new $class($this->name, $body, $arguments, $lineno, $this->getTag());
    }
 
   /**
@@ -108,7 +125,7 @@ class ShortcodeTokenParser extends \Twig_TokenParser
           $value = $parser->parseExpression();
 
           if (!$this->checkConstantExpression($value)) {
-            throw new Twig_Error_Syntax(sprintf('A default value for an argument must be a constant (a boolean, a string, a number, or an array).'), $token->getLine(), $this->parser->getFilename());
+            throw new \Twig_Error_Syntax(sprintf('A default value for an argument must be a constant (a boolean, a string, a number, or an array).'), $token->getLine(), $this->parser->getFilename());
           }
         } else {
           $value = $parser->parseExpression();

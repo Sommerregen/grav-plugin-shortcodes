@@ -1,5 +1,5 @@
 name: "Shortcodes"
-version: 1.0.1
+version: 1.1.0
 description: "This plugin enables to use shortcodes (simple snippets) inside a document to be rendered by Grav."
 icon: puzzle-piece
 author:
@@ -14,13 +14,86 @@ license: MIT/GPL
 form:
   validation: strict
   fields:
-    enabled:
-      type: toggle
-      label: "Plugin Status"
-      highlight: 1
-      default: 0
-      options:
-        1: Enabled
-        0: Disabled
-      validate:
-        type: bool
+    global:
+      type: section
+      title: "Global plugin configurations"
+      underline: 1
+
+      fields:
+        enabled:
+          type: toggle
+          label: "Plugin Status"
+          highlight: 1
+          default: 0
+          options:
+            1: "Enabled"
+            0: "Disabled"
+          validate:
+            type: bool
+
+    default:
+      type: section
+      title: "Default configurations for special shortcodes"
+      underline: 1
+
+      fields:
+        shortcodes.assets.enabled:
+          type: toggle
+          label: "Activate <code>{{% assets %}}</code> shortcode"
+          default: 0
+          options:
+            1: "Yes"
+            0: "No"
+          validate:
+            type: bool
+
+        shortcodes.comment.enabled:
+          type: toggle
+          label: "Activate <code>{{% comment %}}</code> shortcode"
+          default: 0
+          options:
+            1: "Yes"
+            0: "No"
+          validate:
+            type: bool
+
+        shortcodes.embed.enabled:
+          type: toggle
+          label: "Activate <code>{{% embed %}}</code> shortcode"
+          default: 0
+          options:
+            1: "Yes"
+            0: "No"
+          validate:
+            type: bool
+
+        shortcodes.markdown.enabled:
+          type: toggle
+          label: "Activate <code>{{% markdown %}}</code> shortcode"
+          default: 0
+          options:
+            1: "Yes"
+            0: "No"
+          validate:
+            type: bool
+
+        shortcodes.summary.enabled:
+          type: toggle
+          label: "Activate <code>{{% summary %}}</code> shortcode"
+          default: 0
+          options:
+            1: "Yes"
+            0: "No"
+          validate:
+            type: bool
+
+        shortcodes.twig.enabled:
+          type: toggle
+          label: "Activate <code>{{% twig %}}</code> shortcode"
+          default: 0
+          options:
+            1: "Yes"
+            0: "No"
+          validate:
+            type: bool
+

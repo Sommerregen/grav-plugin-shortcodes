@@ -1,3 +1,15 @@
+# v1.1.0
+## 08/08/2015
+
+1. [](#new)
+  * Added admin configurations **(requires Grav 0.9.34+)**
+  * Added `{{% comment %}}`, `{{% twig %}}`, `{{% markdown %}}` shortcodes
+  * Added documentation about `{{% raw %}}` shortcode
+  * Changed Shortcodes event to `onShortcodesInitialized`!
+2. [](#improved)
+  * Extended Twig Shortcodes capabilities for developers
+  * Updated `README.md`
+
 # v1.0.1
 ## 06/25/2015
 
