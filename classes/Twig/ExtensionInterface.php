@@ -15,10 +15,17 @@ namespace Grav\Plugin\Shortcodes\Twig;
  */
 interface ExtensionInterface extends \Twig_ExtensionInterface
 {
-    /**
-     * Returns a list of shortcodes to add to the existing list.
-     *
-     * @return array An array of shortcodes
-     */
-    public function getShortcodes();
+  /**
+   * Returns a list of shortcodes to add to the existing list.
+   *
+   * @return array An array of shortcodes
+   */
+  public function getShortcodes();
+
+  /**
+   * Returns a list of shortcode filters to add to the existing list.
+   *
+   * @return array An array of shortcode filters
+   */
+  public function getShortcodeFilters();
 }

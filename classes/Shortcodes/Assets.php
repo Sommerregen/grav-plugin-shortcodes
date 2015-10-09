@@ -80,12 +80,8 @@ class Assets extends Shortcode
     $type = strtolower($options->get('type'));
     $body = trim(strip_tags($event['body'], '<link><script>'));
 
-    if ($inline = $options->get('inline')) {
-      if ($type === 'css') {
-        $grav['assets']->addInlineCss($body);
-      } elseif ($type === 'js') {
-        $grav['assets']->addInlineJs($body);
-      }
+    if ($options->get('inline')) {
+      $shortcodes->addExtra('assets', 'addInline'. ucfirst($type), $body);
     } else {
       /* @var \Grav\Common\Page\Page $page */
       $page = $event['page'];
@@ -123,7 +119,7 @@ class Assets extends Shortcode
           }
         }
 
-        $grav['assets']->{$name}($url, $priority, $pipeline, $loading);
+        $shortcodes->addExtra('assets', $name, [$url, $priority, $pipeline, $loading]);
       }
     }
   }
