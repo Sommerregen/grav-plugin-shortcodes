@@ -16,84 +16,262 @@ form:
   fields:
     global:
       type: section
-      title: "Global plugin configurations"
+      title: PLUGINS.SHORTCODES.GLOBAL_CONFIG
       underline: 1
 
       fields:
         enabled:
           type: toggle
-          label: "Plugin Status"
+          label: PLUGINS.SHORTCODES.PLUGIN_STATUS
           highlight: 1
           default: 0
           options:
-            1: "Enabled"
-            0: "Disabled"
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
 
     default:
       type: section
-      title: "Default configurations for special shortcodes"
+      title: PLUGINS.SHORTCODES.DEFAULT_CONFIG
       underline: 1
 
       fields:
-        shortcodes.assets.enabled:
-          type: toggle
-          label: "Activate <code>{{% assets %}}</code> shortcode"
-          default: 0
-          options:
-            1: "Yes"
-            0: "No"
-          validate:
-            type: bool
+        assets:
+          type: fieldset
+          collapsible: false
+          icon: list-alt
+          title: PLUGINS.SHORTCODES.ASSETS
 
-        shortcodes.comment.enabled:
-          type: toggle
-          label: "Activate <code>{{% comment %}}</code> shortcode"
-          default: 0
-          options:
-            1: "Yes"
-            0: "No"
-          validate:
-            type: bool
+          fields:
+            shortcodes.assets.enabled:
+              type: toggle
+              label: PLUGINS.SHORTCODES.ASSETS_ENABLED
+              default: 1
+              highlight: 1
+              options:
+                1: PLUGIN_ADMIN.YES
+                0: PLUGIN_ADMIN.NO
+              validate:
+                type: bool
 
-        shortcodes.embed.enabled:
-          type: toggle
-          label: "Activate <code>{{% embed %}}</code> shortcode"
-          default: 0
-          options:
-            1: "Yes"
-            0: "No"
-          validate:
-            type: bool
+            assets.options:
+              type: fieldset
+              title: PLUGINS.SHORTCODES.OPTIONS
+              collapsible: true
+              collapsed: true
+              icon: gear
 
-        shortcodes.markdown.enabled:
-          type: toggle
-          label: "Activate <code>{{% markdown %}}</code> shortcode"
-          default: 0
-          options:
-            1: "Yes"
-            0: "No"
-          validate:
-            type: bool
+              fields:
+                shortcodes.assets.options.type:
+                  type: select
+                  size: small
+                  label: PLUGINS.SHORTCODES.ASSETS_OPTIONS.TYPE
+                  default: css
+                  options:
+                    css: PLUGINS.SHORTCODES.ASSETS_OPTIONS.CSS
+                    js: PLUGINS.SHORTCODES.ASSETS_OPTIONS.JS
+                  validate:
+                    type: string
 
-        shortcodes.summary.enabled:
-          type: toggle
-          label: "Activate <code>{{% summary %}}</code> shortcode"
-          default: 0
-          options:
-            1: "Yes"
-            0: "No"
-          validate:
-            type: bool
+                shortcodes.assets.options.inline:
+                  type: toggle
+                  label: PLUGINS.SHORTCODES.ASSETS_OPTIONS.INLINE
+                  default: 0
+                  options:
+                    1: PLUGIN_ADMIN.YES
+                    0: PLUGIN_ADMIN.NO
+                  validate:
+                    type: bool
 
-        shortcodes.twig.enabled:
-          type: toggle
-          label: "Activate <code>{{% twig %}}</code> shortcode"
-          default: 0
-          options:
-            1: "Yes"
-            0: "No"
-          validate:
-            type: bool
+                shortcodes.assets.options.priority:
+                  type: text
+                  size: x-small
+                  label: PLUGINS.SHORTCODES.ASSETS_OPTIONS.PRIORITY
+                  help: PLUGINS.SHORTCODES.ASSETS_OPTIONS.PRIORITY_HELP
+                  default: 10
+                  validate:
+                    type: int
+                    min: 0
+                    max: 65536
+
+                shortcodes.assets.options.pipeline:
+                  type: toggle
+                  label: PLUGINS.SHORTCODES.ASSETS_OPTIONS.PIPELINE
+                  default: 0
+                  options:
+                    1: PLUGIN_ADMIN.YES
+                    0: PLUGIN_ADMIN.NO
+                  validate:
+                    type: bool
+
+                shortcodes.assets.options.load:
+                  type: select
+                  size: large
+                  label: PLUGINS.SHORTCODES.ASSETS_OPTIONS.LOAD
+                  help: PLUGINS.SHORTCODES.ASSETS_OPTIONS.LOAD_HELP
+                  default: ""
+                  options:
+                    "": PLUGINS.SHORTCODES.ASSETS_OPTIONS.DEFAULT
+                    async: PLUGINS.SHORTCODES.ASSETS_OPTIONS.ASYNC
+                    defer: PLUGINS.SHORTCODES.ASSETS_OPTIONS.DEFER
+
+        comment:
+          type: fieldset
+          title: PLUGINS.SHORTCODES.COMMENT
+          collapsed: true
+          icon: comments
+
+          fields:
+            shortcodes.comment.enabled:
+              type: toggle
+              label: PLUGINS.SHORTCODES.COMMENT_ENABLED
+              default: 1
+              highlight: 1
+              options:
+                1: PLUGIN_ADMIN.YES
+                0: PLUGIN_ADMIN.NO
+              validate:
+                type: bool
+
+        embed:
+          type: fieldset
+          title: PLUGINS.SHORTCODES.EMBED
+          collapsible: true
+          collapsed: false
+          icon: trello
+
+          fields:
+            shortcodes.embed.enabled:
+              type: toggle
+              label: PLUGINS.SHORTCODES.EMBED_ENABLED
+              default: 1
+              highlight: 1
+              options:
+                1: PLUGIN_ADMIN.YES
+                0: PLUGIN_ADMIN.NO
+              validate:
+                type: bool
+
+            embed.options:
+              type: fieldset
+              title: PLUGINS.SHORTCODES.OPTIONS
+              collapsible: true
+              collapsed: true
+              icon: gear
+
+              fields:
+                shortcodes.embed.options.template:
+                  type: text
+                  size: medium
+                  label: PLUGINS.SHORTCODES.EMBED_TEMPLATE
+                  placeholder: "template"
+                  validate:
+                    type: string
+
+        markdown:
+          type: fieldset
+          title: PLUGINS.SHORTCODES.MARKDOWN
+          collapsible: false
+          icon: code
+
+          fields:
+            shortcodes.markdown.enabled:
+              type: toggle
+              label: PLUGINS.SHORTCODES.MARKDOWN_ENABLED
+              default: 1
+              highlight: 1
+              options:
+                1: PLUGIN_ADMIN.YES
+                0: PLUGIN_ADMIN.NO
+              validate:
+                type: bool
+
+            markdown.options:
+              type: fieldset
+              title: PLUGINS.SHORTCODES.OPTIONS
+              collapsible: true
+              collapsed: true
+              icon: gear
+
+              fields:
+                shortcodes.markdown.options.extra:
+                  type: toggle
+                  label: Markdown extra
+                  help: PLUGIN_ADMIN.MARKDOWN_EXTRA_HELP
+                  default: 1
+                  options:
+                    1: PLUGIN_ADMIN.YES
+                    0: PLUGIN_ADMIN.NO
+                  validate:
+                    type: bool
+
+                shortcodes.markdown.options.auto_line_breaks:
+                  type: toggle
+                  label: PLUGIN_ADMIN.AUTO_LINE_BREAKS
+                  help: PLUGIN_ADMIN.AUTO_LINE_BREAKS_HELP
+                  default: 0
+                  options:
+                    1: PLUGIN_ADMIN.YES
+                    0: PLUGIN_ADMIN.NO
+                  validate:
+                    type: bool
+
+                shortcodes.markdown.options.auto_url_links:
+                  type: toggle
+                  label: PLUGIN_ADMIN.AUTO_URL_LINKS
+                  help: PLUGIN_ADMIN.AUTO_URL_LINKS_HELP
+                  default: 0
+                  options:
+                    1: PLUGIN_ADMIN.YES
+                    0: PLUGIN_ADMIN.NO
+                  validate:
+                    type: bool
+
+                shortcodes.markdown.options.escape_markup:
+                  type: toggle
+                  label: PLUGIN_ADMIN.ESCAPE_MARKUP
+                  help: PLUGIN_ADMIN.ESCAPE_MARKUP_HELP
+                  default: 0
+                  options:
+                    1: PLUGIN_ADMIN.YES
+                    0: PLUGIN_ADMIN.NO
+                  validate:
+                    type: bool
+
+        summary:
+          type: fieldset
+          title: PLUGINS.SHORTCODES.SUMMARY
+          collapsible: false
+          icon: align-justify
+
+          fields:
+            shortcodes.summary.enabled:
+              type: toggle
+              label: PLUGINS.SHORTCODES.SUMMARY_ENABLED
+              default: 1
+              highlight: 1
+              options:
+                1: PLUGIN_ADMIN.YES
+                0: PLUGIN_ADMIN.NO
+              validate:
+                type: bool
+
+        twig:
+          type: fieldset
+          title: PLUGINS.SHORTCODES.TWIG
+          collapsible: false
+          icon: leaf
+
+          fields:
+            shortcodes.twig.enabled:
+              type: toggle
+              label: PLUGINS.SHORTCODES.TWIG_ENABLED
+              default: 1
+              highlight: 1
+              options:
+                1: PLUGIN_ADMIN.YES
+                0: PLUGIN_ADMIN.NO
+              validate:
+                type: bool
 
