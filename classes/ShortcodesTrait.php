@@ -15,33 +15,33 @@ namespace Grav\Plugin\Shortcodes;
  */
 trait ShortcodesTrait
 {
-    /**
-     * A Shortcode instance.
-     *
-     * @var \Grav\Plugin\Shortcodes\Shortcodes
-     */
-    protected static $shortcodes;
+  /**
+   * A Shortcode instance.
+   *
+   * @var \Grav\Plugin\Shortcodes\Shortcodes
+   */
+  protected static $shortcodes;
 
-    /**
-     * Get the Shortcode instance.
-     *
-     * @return \Grav\Plugin\Shortcodes
-     */
-    public static function getShortcodesClass()
-    {
-        if (!self::$shortcodes) {
-            self::$shortcodes = Shortcodes::instance();
-        }
-        return self::$shortcodes;
+  /**
+   * Get the Shortcode instance.
+   *
+   * @return \Grav\Plugin\Shortcodes
+   */
+  public static function getShortcodesClass()
+  {
+    if (!self::$shortcodes) {
+      self::$shortcodes = Shortcodes::instance();
     }
+    return self::$shortcodes;
+  }
 
-    /**
-     * Sets a Shortcode instance.
-     *
-     * @param Grav\Plugin\Shortcodes $shortcodes The Shortcode instance
-     */
-    public static function setShortcodesClass(Shortcodes $shortcodes)
-    {
-        self::$shortcodes = $shortcodes;
-    }
+  /**
+   * Sets a Shortcode instance.
+   *
+   * @param Grav\Plugin\Shortcodes $shortcodes The Shortcode instance
+   */
+  public static function setShortcodesClass(Shortcodes $shortcodes)
+  {
+    self::$shortcodes = $shortcodes;
+  }
 }

@@ -22,7 +22,7 @@ class InlineShortcode extends Twig\GenericShortcode
    * @param callable  $callable Callable to call for the shortcode.
    * @param array     $options  An array of shortcode options.
    */
-  public function __construct($name, $callable, array $options = array())
+  public function __construct($name, $callable, array $options = [])
   {
     parent::__construct($name, $callable, 'inline', $options);
   }

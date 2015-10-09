@@ -21,7 +21,7 @@ class Autoloader
   {
     // Set routes for autoloading
     if (!is_array($routes) || count($routes) == 0) {
-      $routes = [__NAMESPACE__ => __DIR__];
+      $routes = [__NAMESPACE__ . '\\' => __DIR__];
     }
 
     $this->route($routes);
@@ -89,7 +89,7 @@ class Autoloader
    */
   public function register($prepend = false)
   {
-    spl_autoload_register(array($this, 'autoload'), false, $prepend);
+    spl_autoload_register([$this, 'autoload'], false, $prepend);
   }
 
   /**
@@ -97,6 +97,6 @@ class Autoloader
    */
   public function unregister()
   {
-    spl_autoload_unregister(array($this, 'autoload'));
+    spl_autoload_unregister([$this, 'autoload']);
   }
 }
