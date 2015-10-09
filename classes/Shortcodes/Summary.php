@@ -47,6 +47,9 @@ class Summary extends Shortcode
     /* @var \Grav\Common\Page\Page $page */
     $page = $event['page'];
 
+    /* @var \Grav\Plugin\Shortcodes\Shortcodes $shortcodes */
+    $shortcodes = $event['shortcodes'];
+
     /* @var \Grav\Common\Data\Data $options */
     $options = $event['options'];
     $options->setDefaults($this->defaults);

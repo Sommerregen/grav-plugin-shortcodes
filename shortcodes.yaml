@@ -9,7 +9,7 @@ shortcodes:
     enabled: true
     options:
       type: "css"           # Assets type (either "css" or "js")
-      inline: false         # Include assets as block or inline argument
+      inline: false         # Include assets as block or inline expression
       priority: 10          # Priority to add CSS or JS to Grav pipeline, bigger comes first
       pipeline: false       # Pipeline assets or not
       load: ""              # Load asset either asynchronously "async" or deferred "defer"

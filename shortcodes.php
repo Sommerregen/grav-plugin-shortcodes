@@ -37,7 +37,7 @@ class ShortcodesPlugin extends Plugin
    *
    * @var \Grav\Plugin\Shortcodes\Shortcodes
    */
-  protected $backend;
+  protected $shortcodes;
 
   /**
    * Return a list of subscribed events.
@@ -47,15 +47,14 @@ class ShortcodesPlugin extends Plugin
   public static function getSubscribedEvents()
   {
     return [
-      'onTwigInitialized' => ['onTwigInitialized', 0],
-      'onBuildPagesInitialized' => ['onBuildPagesInitialized', 0]
+      'onPluginsInitialized' => ['onPluginsInitialized', 0]
     ];
   }
 
   /**
-   * Initialize configuration when building pages.
+   * Initialize configuration
    */
-  public function onBuildPagesInitialized()
+  public function onPluginsInitialized()
   {
     if ($this->isAdmin()) {
       $this->active = false;
@@ -63,10 +62,41 @@ class ShortcodesPlugin extends Plugin
     }
 
     if ($this->config->get('plugins.shortcodes.enabled')) {
-      $this->init();
       $this->enable([
-        'onPageContentRaw' => ['onPageContentRaw', 0]
+        'onPageInitialized' => ['onPageInitialized', 0],
+        'onPageContentRaw' => ['onPageContentRaw', 0],
+        'onPageContentProcessed' => ['onPageContentProcessed', 0],
+        'onTwigInitialized' => ['onTwigInitialized', 0]
       ]);
+    }
+  }
+
+  /**
+   * Initialize page.
+   */
+  public function onPageInitialized()
+  {
+    /** @var \Grav\Common\Page\Page $page */
+    $page = $this->grav['page'];
+
+    /** @var Cache $cache */
+    $cache = $this->grav['cache'];
+
+    /** @var Debugger $debugger */
+    $debugger = $this->grav['debugger'];
+
+    $cache_id = md5('shortcodes' . $page->id() . $cache->getKey());
+    if ($data = $cache->fetch($cache_id)) {
+      $debugger->addMessage("Shortcodes Plugin cache hit.");
+
+      foreach ($data as $key => $extra) {
+        $object = ($key != 'page') ? $this->grav[$key] : $page;
+
+        foreach ($extra as $value) {
+          list($method, $arguments) = $value;
+          call_user_func_array([$object, $method], $arguments);
+        }
+      }
     }
   }
 
@@ -88,9 +118,26 @@ class ShortcodesPlugin extends Plugin
     if ($config->get('enabled')) {
       $raw = $page->getRawContent();
 
-      // Set the parsed content back into as raw content
-      $page->setRawContent($this->backend->render($raw, $config->get('shortcodes', []), $page));
+      // Set parsed content back into as raw content
+      $page->setRawContent($this->init()->render($raw, $config->get('shortcodes', []), $page));
     }
+  }
+
+  /**
+   * Add content after page was processed.
+   *
+   * @param Event $event An event object, when `onPageContentProcessed`
+   *                     is fired.
+   */
+  public function onPageContentProcessed(Event $event)
+  {
+    // Get the page header
+    $page = $event['page'];
+
+    // Get modified content, replace all tokens with their
+    // respective shortcodes and write content back to page
+    $content = $page->getRawContent();
+    $page->setRawContent($this->init()->normalize($content));
   }
 
   /**
@@ -125,7 +172,7 @@ class ShortcodesPlugin extends Plugin
    */
   protected function init()
   {
-    if (!$this->backend) {
+    if (!$this->shortcodes) {
       // Initialize Autoloader
       require_once(__DIR__.'/classes/Autoloader.php');
 
@@ -133,9 +180,9 @@ class ShortcodesPlugin extends Plugin
       $autoloader->register();
 
       // Initialize back-end
-      $this->backend = new Shortcodes\Shortcodes($this->config);
+      $this->shortcodes = new Shortcodes\Shortcodes($this->config);
     }
 
-    return $this->backend;
+    return $this->shortcodes;
   }
 }
